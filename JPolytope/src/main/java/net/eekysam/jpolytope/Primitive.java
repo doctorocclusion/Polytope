@@ -33,7 +33,7 @@ public class Primitive
 		return newverts;
 	}
 	
-	public int getDimention()
+	public int getDimension()
 	{
 		return this.verts.length - 1;
 	}

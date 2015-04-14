@@ -2,10 +2,10 @@ package net.eekysam.jpolytope;
 
 public class ArrayPolytope<T>
 {
-	public final int dimention;
+	public final int dimension;
 	
 	public ArrayPolytope(LinkedPolytope<T> polytope)
 	{
-		this.dimention = polytope.dimention;
+		this.dimension = polytope.dimension;
 	}
 }

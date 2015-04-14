@@ -1,80 +1,103 @@
 package net.eekysam.jpolytope;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Set;
 import java.util.UUID;
 
 public class LinkedPolytope<T>
 {
-	private HashSet<LinkedPolytope<T>> sub;
-	private HashSet<LinkedPolytope<T>> sup;
-	public final int dimention;
+	private HashSet<LinkedPolytope<T>> children;
+	private HashSet<LinkedPolytope<T>> parents;
+	public final int dimension;
 	
 	public final UUID id;
 	
 	public T data;
 	
-	public LinkedPolytope(int dimention)
+	public LinkedPolytope(int dimension)
 	{
-		this(dimention, UUID.randomUUID());
+		this(dimension, UUID.randomUUID());
 	}
 	
-	public LinkedPolytope(int dimention, UUID id)
+	public LinkedPolytope(int dimension, UUID id)
 	{
-		this.dimention = dimention;
+		this.dimension = dimension;
 		this.id = id;
-		this.sub = new HashSet<LinkedPolytope<T>>();
-		this.sup = new HashSet<LinkedPolytope<T>>();
+		this.children = new HashSet<LinkedPolytope<T>>();
+		this.parents = new HashSet<LinkedPolytope<T>>();
+	}
+	
+	public Set<LinkedPolytope<T>> getElements(int dimension)
+	{
+		int curd = this.dimension;
+		HashSet<LinkedPolytope<T>> cur = new HashSet<>();
+		cur.add(this);
+		while (curd != dimension)
+		{
+			if (curd < dimension)
+			{
+				cur = allParents(cur);
+				curd++;
+			}
+			else
+			{
+				cur = allChildren(cur);
+				curd--;
+			}
+		}
+		return cur;
 	}
 	
 	public Iterator<LinkedPolytope<T>> getParents()
 	{
-		return this.sup.iterator();
+		return this.parents.iterator();
 	}
 	
 	public Iterator<LinkedPolytope<T>> getChildren()
 	{
-		return this.sup.iterator();
+		return this.children.iterator();
 	}
 	
 	public void addParent(LinkedPolytope<T> parent)
 	{
-		if (parent.dimention != this.dimention + 1)
+		if (parent.dimension != this.dimension + 1)
 		{
-			throw new IllegalArgumentException(String.format("A parent element of this element should be %d (%d + 1) not %d dimentional.", this.dimention + 1, this.dimention, parent.dimention));
+			throw new IllegalArgumentException(String.format("A parent element of this element should be %d (%d + 1) not %d dimensional.", this.dimension + 1, this.dimension, parent.dimension));
 		}
-		this.sup.add(parent);
-		parent.sub.add(this);
+		this.parents.add(parent);
+		parent.children.add(this);
 	}
 	
 	public void addChild(LinkedPolytope<T> child)
 	{
-		if (child.dimention != this.dimention - 1)
+		if (child.dimension != this.dimension - 1)
 		{
-			throw new IllegalArgumentException(String.format("A child element of this element should be %d (%d - 1) not %d dimentional.", this.dimention - 1, this.dimention, child.dimention));
+			throw new IllegalArgumentException(String.format("A child element of this element should be %d (%d - 1) not %d dimensional.", this.dimension - 1, this.dimension, child.dimension));
 		}
-		this.sub.add(child);
-		child.sup.add(this);
+		this.children.add(child);
+		child.parents.add(this);
 	}
 	
 	public void removeParent(LinkedPolytope<T> parent)
 	{
-		if (parent.dimention != this.dimention + 1)
+		if (parent.dimension != this.dimension + 1)
 		{
-			throw new IllegalArgumentException(String.format("A parent element of this element should be %d (%d + 1) not %d dimentional.", this.dimention + 1, this.dimention, parent.dimention));
+			throw new IllegalArgumentException(String.format("A parent element of this element should be %d (%d + 1) not %d dimensional.", this.dimension + 1, this.dimension, parent.dimension));
 		}
-		this.sup.remove(parent);
-		parent.sub.remove(this);
+		this.parents.remove(parent);
+		parent.children.remove(this);
 	}
 	
 	public void removeChild(LinkedPolytope<T> child)
 	{
-		if (child.dimention != this.dimention - 1)
+		if (child.dimension != this.dimension - 1)
 		{
-			throw new IllegalArgumentException(String.format("A child element of this element should be %d (%d - 1) not %d dimentional.", this.dimention - 1, this.dimention, child.dimention));
+			throw new IllegalArgumentException(String.format("A child element of this element should be %d (%d - 1) not %d dimensional.", this.dimension - 1, this.dimension, child.dimension));
 		}
-		this.sub.remove(child);
-		child.sup.remove(this);
+		this.children.remove(child);
+		child.parents.remove(this);
 	}
 	
 	@Override
@@ -93,8 +116,36 @@ public class LinkedPolytope<T>
 		if (o instanceof LinkedPolytope)
 		{
 			LinkedPolytope<?> elm = (LinkedPolytope<?>) o;
-			return elm.dimention == this.dimention && this.id.equals(elm.id);
+			return elm.dimension == this.dimension && this.id.equals(elm.id);
 		}
 		return false;
+	}
+	
+	public static <T> HashSet<LinkedPolytope<T>> allParents(Collection<LinkedPolytope<T>> polys)
+	{
+		HashSet<LinkedPolytope<T>> outs = new HashSet<>();
+		for (LinkedPolytope<T> poly : polys)
+		{
+			Iterator<LinkedPolytope<T>> iter = poly.getParents();
+			while (iter.hasNext())
+			{
+				outs.add(iter.next());
+			}
+		}
+		return outs;
+	}
+	
+	public static <T> HashSet<LinkedPolytope<T>> allChildren(Collection<LinkedPolytope<T>> polys)
+	{
+		HashSet<LinkedPolytope<T>> outs = new HashSet<>();
+		for (LinkedPolytope<T> poly : polys)
+		{
+			Iterator<LinkedPolytope<T>> iter = poly.getChildren();
+			while (iter.hasNext())
+			{
+				outs.add(iter.next());
+			}
+		}
+		return outs;
 	}
 }

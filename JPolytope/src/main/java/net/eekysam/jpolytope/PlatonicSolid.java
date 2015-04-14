@@ -11,7 +11,7 @@ public enum PlatonicSolid
 		}
 		
 		@Override
-		void createBuilder(Builder3D<?> builder)
+		void createTopo(Builder3D<?> builder)
 		{
 			builder.addFace(null, 0, 1, 2);
 			builder.addFace(null, 0, 3, 1);
@@ -20,7 +20,7 @@ public enum PlatonicSolid
 		}
 		
 		@Override
-		void recreateVerts(Builder3D<?> builder)
+		void createData(Builder3D<?> builder)
 		{
 			
 		}
@@ -34,7 +34,7 @@ public enum PlatonicSolid
 		}
 		
 		@Override
-		void createBuilder(Builder3D<?> builder)
+		void createTopo(Builder3D<?> builder)
 		{
 			builder.addFace(null, 0, 1, 2, 3);
 			builder.addFace(null, 4, 5, 6, 7);
@@ -45,7 +45,7 @@ public enum PlatonicSolid
 		}
 		
 		@Override
-		void recreateVerts(Builder3D<?> builder)
+		void createData(Builder3D<?> builder)
 		{
 			
 		}
@@ -59,13 +59,21 @@ public enum PlatonicSolid
 		}
 		
 		@Override
-		void createBuilder(Builder3D<?> builder)
+		void createTopo(Builder3D<?> builder)
 		{
+			builder.addFace(null, 0, 5, 1);
+			builder.addFace(null, 1, 5, 2);
+			builder.addFace(null, 2, 5, 3);
+			builder.addFace(null, 3, 5, 0);
 			
+			builder.addFace(null, 0, 6, 1);
+			builder.addFace(null, 1, 6, 2);
+			builder.addFace(null, 2, 6, 3);
+			builder.addFace(null, 3, 6, 0);
 		}
 		
 		@Override
-		void recreateVerts(Builder3D<?> builder)
+		void createData(Builder3D<?> builder)
 		{
 			
 		}
@@ -79,13 +87,27 @@ public enum PlatonicSolid
 		}
 		
 		@Override
-		void createBuilder(Builder3D<?> builder)
+		void createTopo(Builder3D<?> builder)
 		{
+			builder.addFace(null, 0, 1, 2, 3, 4);
 			
+			builder.addFace(null, 0, 5, 10, 9, 4);
+			builder.addFace(null, 4, 9, 14, 8, 3);
+			builder.addFace(null, 3, 8, 13, 7, 2);
+			builder.addFace(null, 2, 7, 12, 6, 1);
+			builder.addFace(null, 1, 6, 11, 5, 0);
+			
+			builder.addFace(null, 9, 10, 15, 19, 14);
+			builder.addFace(null, 5, 10, 15, 16, 11);
+			builder.addFace(null, 6, 12, 17, 16, 11);
+			builder.addFace(null, 7, 13, 18, 17, 12);
+			builder.addFace(null, 8, 14, 19, 18, 13);
+			
+			builder.addFace(null, 15, 16, 17, 18, 19);
 		}
 		
 		@Override
-		void recreateVerts(Builder3D<?> builder)
+		void createData(Builder3D<?> builder)
 		{
 			
 		}
@@ -99,13 +121,39 @@ public enum PlatonicSolid
 		}
 		
 		@Override
-		void createBuilder(Builder3D<?> builder)
+		void createTopo(Builder3D<?> builder)
 		{
+			builder.addFace(null, 0, 1, 2);
 			
+			builder.addFace(null, 0, 2, 8);
+			builder.addFace(null, 0, 8, 3);
+			builder.addFace(null, 0, 3, 4);
+			
+			builder.addFace(null, 1, 0, 4);
+			builder.addFace(null, 1, 4, 5);
+			builder.addFace(null, 1, 5, 6);
+			
+			builder.addFace(null, 2, 1, 6);
+			builder.addFace(null, 2, 6, 7);
+			builder.addFace(null, 2, 7, 8);
+			
+			builder.addFace(null, 3, 8, 9);
+			builder.addFace(null, 3, 9, 10);
+			builder.addFace(null, 3, 10, 4);
+			
+			builder.addFace(null, 5, 4, 10);
+			builder.addFace(null, 5, 10, 11);
+			builder.addFace(null, 5, 11, 6);
+			
+			builder.addFace(null, 7, 6, 11);
+			builder.addFace(null, 7, 11, 9);
+			builder.addFace(null, 7, 9, 8);
+			
+			builder.addFace(null, 9, 10, 11);
 		}
 		
 		@Override
-		void recreateVerts(Builder3D<?> builder)
+		void createData(Builder3D<?> builder)
 		{
 			
 		}
@@ -130,19 +178,30 @@ public enum PlatonicSolid
 		this.edges = (2 * p * q) / denom;
 		this.faces = (4 * q) / denom;
 		
-		this.builder = new Builder3D<>();
-		this.createBuilder(this.builder);
+		this.builder = new Builder3D<Integer>()
+		{
+			@Override
+			public Integer createVert(int id, Integer given)
+			{
+				if (given == null)
+				{
+					return id;
+				}
+				return super.createVert(id, given);
+			}
+		};
+		this.createTopo(this.builder);
 	}
 	
 	public abstract PlatonicSolid dual();
 	
-	abstract void createBuilder(Builder3D<?> builder);
+	abstract void createTopo(Builder3D<?> builder);
 	
-	abstract void recreateVerts(Builder3D<?> builder);
+	abstract void createData(Builder3D<?> builder);
 	
 	public LinkedPolytope<?> geometry()
 	{
-		this.recreateVerts(this.builder);
-		return this.builder.generatePoly(null);
+		this.createData(this.builder);
+		return this.builder.generatePoly();
 	}
 }

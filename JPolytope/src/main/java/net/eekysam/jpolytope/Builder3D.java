@@ -66,6 +66,7 @@ public class Builder3D<T>
 	private ArrayList<Face<T>> faces = new ArrayList<>();
 	private ArrayList<Edge<T>> edges = new ArrayList<>();
 	private HashMap<Integer, T> verts = new HashMap<>();
+	public T cell;
 	
 	public void addFace(T data, int... verts)
 	{
@@ -73,16 +74,18 @@ public class Builder3D<T>
 		for (int i = 0; i < verts.length; i++)
 		{
 			Edge<T> e = new Edge<>(verts[i], verts[(i + 1) % verts.length]);
-			e.data = data;
-			es[i] = this.addEdge(e);
+			es[i] = this.addEdge(e, false);
 		}
 		Face<T> face = new Face<>(es);
+		face.data = data;
 		int ind = this.faces.indexOf(face);
 		if (ind != -1)
 		{
 			this.faces.set(ind, face);
 			return;
 		}
+		ind = this.faces.size();
+		face.data = this.createFace(ind, face.data);
 		this.faces.add(face);
 	}
 	
@@ -90,30 +93,50 @@ public class Builder3D<T>
 	{
 		Edge<T> e = new Edge<>(v1, v2);
 		e.data = data;
-		this.addEdge(e);
+		this.addEdge(e, true);
 	}
 	
-	private int addEdge(Edge<T> edge)
+	private int addEdge(Edge<T> edge, boolean overwrite)
 	{
+		this.addVert(edge.v1, null, false);
+		this.addVert(edge.v2, null, false);
 		int ind = this.edges.indexOf(edge);
 		if (ind != -1)
 		{
-			this.edges.set(ind, edge);
+			if (overwrite)
+			{
+				this.edges.set(ind, edge);
+			}
 			return ind;
 		}
+		ind = this.edges.size();
+		edge.data = this.createEdge(ind, edge.data);
 		this.edges.add(edge);
-		return this.edges.size() - 1;
+		return ind;
 	}
 	
 	public void setVert(int index, T data)
 	{
-		this.verts.put(index, data);
+		this.addVert(index, data, true);
 	}
 	
-	public LinkedPolytope<T> generatePoly(T data)
+	public void addVert(int index, T data, boolean overwrite)
+	{
+		if (this.verts.containsKey(index))
+		{
+			if (overwrite)
+			{
+				this.verts.put(index, data);
+			}
+			return;
+		}
+		this.verts.put(index, this.createVert(index, data));
+	}
+	
+	public LinkedPolytope<T> generatePoly()
 	{
 		LinkedPolytope<T> poly = new LinkedPolytope<T>(3);
-		poly.data = data;
+		poly.data = this.cell;
 		
 		HashMap<Integer, LinkedPolytope<T>> pvs = new HashMap<>();
 		for (Entry<Integer, T> vert : this.verts.entrySet())
@@ -128,11 +151,11 @@ public class Builder3D<T>
 		
 		for (int i = 0; i < pes.length; i++)
 		{
-			LinkedPolytope<T> pe = new LinkedPolytope<>(1);
+			pes[i] = new LinkedPolytope<>(1);
 			Edge<T> e = this.edges.get(i);
-			pe.data = e.data;
-			pe.addChild(pvs.get(e.v1));
-			pe.addChild(pvs.get(e.v2));
+			pes[i].data = e.data;
+			pes[i].addChild(pvs.get(e.v1));
+			pes[i].addChild(pvs.get(e.v2));
 		}
 		
 		@SuppressWarnings("unchecked")
@@ -140,12 +163,12 @@ public class Builder3D<T>
 		
 		for (int i = 0; i < fes.length; i++)
 		{
-			LinkedPolytope<T> pf = new LinkedPolytope<>(2);
+			fes[i] = new LinkedPolytope<>(2);
 			Face<T> f = this.faces.get(i);
-			pf.data = f.data;
+			fes[i].data = f.data;
 			for (int e : f.edges)
 			{
-				pf.addChild(pes[e]);
+				fes[i].addChild(pes[e]);
 			}
 		}
 		
@@ -155,5 +178,20 @@ public class Builder3D<T>
 		}
 		
 		return poly;
+	}
+	
+	public T createVert(int id, T given)
+	{
+		return given;
+	}
+	
+	public T createEdge(int id, T given)
+	{
+		return given;
+	}
+	
+	public T createFace(int id, T given)
+	{
+		return given;
 	}
 }
