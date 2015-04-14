@@ -1,6 +1,6 @@
 package net.eekysam.jpolytope;
 
-public class Primitive implements IPolytope
+public class Primitive
 {
 	public final Vector[] verts;
 	
@@ -9,18 +9,17 @@ public class Primitive implements IPolytope
 		this.verts = verts;
 	}
 	
-	@Override
-	public Primitive[] sides()
+	public Primitive[] facets()
 	{
-		Primitive[] sides = new Primitive[this.verts.length];
-		for (int i = 0; i < sides.length; i++)
+		Primitive[] facets = new Primitive[this.verts.length];
+		for (int i = 0; i < facets.length; i++)
 		{
-			sides[i] = new Primitive(this.vertsMissing(i));
+			facets[i] = new Primitive(this.vertsWithout(i));
 		}
-		return sides;
+		return facets;
 	}
 	
-	private Vector[] vertsMissing(int remove)
+	private Vector[] vertsWithout(int remove)
 	{
 		Vector[] newverts = new Vector[this.verts.length - 1];
 		int j = 0;
@@ -32,5 +31,10 @@ public class Primitive implements IPolytope
 			}
 		}
 		return newverts;
+	}
+	
+	public int getDimention()
+	{
+		return this.verts.length - 1;
 	}
 }
