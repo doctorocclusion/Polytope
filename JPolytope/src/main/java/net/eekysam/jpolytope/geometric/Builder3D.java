@@ -99,12 +99,17 @@ public class Builder3D
 		return ind;
 	}
 	
+	public void setVert(int index, double... vert)
+	{
+		this.setVert(index, new Vertex(vert));
+	}
+	
 	public void setVert(int index, Vertex vert)
 	{
 		this.addVert(index, vert, true);
 	}
 	
-	public void addVert(int index, Vertex vert, boolean overwrite)
+	private void addVert(int index, Vertex vert, boolean overwrite)
 	{
 		if (this.verts.containsKey(index))
 		{

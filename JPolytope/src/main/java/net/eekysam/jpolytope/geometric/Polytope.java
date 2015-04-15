@@ -5,6 +5,7 @@ import java.util.Set;
 
 import net.eekysam.jpolytope.general.PolytopeGraph;
 import net.eekysam.jpolytope.geometric.dat.IGeoDat;
+import net.eekysam.jpolytope.geometric.dat.IPointDat;
 
 public class Polytope
 {
@@ -38,5 +39,23 @@ public class Polytope
 			}
 		}
 		return clone;
+	}
+	
+	public void transform(TransformMatrix matrix)
+	{
+		for (PolytopeGraph<IGeoDat> vert : this.geo.getElements(0))
+		{
+			if (vert.data instanceof IPointDat)
+			{
+				((IPointDat) vert.data).transform(matrix);
+			}
+		}
+	}
+	
+	public void scale(double scale)
+	{
+		TransformMatrix matrix = new TransformMatrix(this.dimension);
+		matrix.scale(scale);
+		this.transform(matrix);
 	}
 }

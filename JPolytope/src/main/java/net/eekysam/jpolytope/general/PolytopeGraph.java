@@ -1,6 +1,7 @@
 package net.eekysam.jpolytope.general;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -96,14 +97,24 @@ public class PolytopeGraph<T>
 		return all;
 	}
 	
-	public Iterator<PolytopeGraph<T>> getParents()
+	public Set<PolytopeGraph<T>> getParents()
 	{
-		return this.parents.iterator();
+		return Collections.unmodifiableSet(this.parents);
 	}
 	
-	public Iterator<PolytopeGraph<T>> getChildren()
+	public Set<PolytopeGraph<T>> getChildren()
 	{
-		return this.children.iterator();
+		return Collections.unmodifiableSet(this.children);
+	}
+	
+	public int parentCount()
+	{
+		return this.parents.size();
+	}
+	
+	public int childCount()
+	{
+		return this.children.size();
 	}
 	
 	public void addParent(PolytopeGraph<T> parent)
@@ -149,17 +160,30 @@ public class PolytopeGraph<T>
 	@Override
 	public PolytopeGraph<T> clone()
 	{
-		PolytopeGraph<T> clone = new PolytopeGraph<>(this.dimension);
-		clone.data = this.data;
-		for (PolytopeGraph<T> elem : this.children)
+		return this.getClone(new HashMap<>());
+	}
+	
+	private PolytopeGraph<T> getClone(HashMap<UUID, PolytopeGraph<T>> make)
+	{
+		if (make.containsKey(this.id))
 		{
-			clone.children.add(elem.clone());
+			return make.get(this.id);
 		}
-		for (PolytopeGraph<T> elem : this.parents)
+		else
 		{
-			clone.parents.add(elem.clone());
+			PolytopeGraph<T> clone = new PolytopeGraph<T>(this.dimension);
+			make.put(this.id, clone);
+			for (PolytopeGraph<T> elem : this.children)
+			{
+				clone.children.add(elem.getClone(make));
+			}
+			for (PolytopeGraph<T> elem : this.parents)
+			{
+				clone.parents.add(elem.getClone(make));
+			}
+			clone.data = this.data;
+			return clone;
 		}
-		return clone;
 	}
 	
 	@Override
@@ -183,17 +207,12 @@ public class PolytopeGraph<T>
 		return false;
 	}
 	
-	public boolean fullEquals(Object o)
-	{
-		throw new UnsupportedOperationException();
-	}
-	
 	public static <T> HashSet<PolytopeGraph<T>> allParents(Collection<PolytopeGraph<T>> polys)
 	{
 		HashSet<PolytopeGraph<T>> outs = new HashSet<>();
 		for (PolytopeGraph<T> poly : polys)
 		{
-			Iterator<PolytopeGraph<T>> iter = poly.getParents();
+			Iterator<PolytopeGraph<T>> iter = poly.getParents().iterator();
 			while (iter.hasNext())
 			{
 				outs.add(iter.next());
@@ -207,7 +226,7 @@ public class PolytopeGraph<T>
 		HashSet<PolytopeGraph<T>> outs = new HashSet<>();
 		for (PolytopeGraph<T> poly : polys)
 		{
-			Iterator<PolytopeGraph<T>> iter = poly.getChildren();
+			Iterator<PolytopeGraph<T>> iter = poly.getChildren().iterator();
 			while (iter.hasNext())
 			{
 				outs.add(iter.next());

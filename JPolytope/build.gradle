@@ -1,6 +1,8 @@
 apply plugin: 'java'
 apply plugin: 'eclipse'
 
+version = '0.1.0'
+
 repositories 
 {
 	mavenCentral()
@@ -8,8 +10,7 @@ repositories
 
 dependencies
 {
-	compile 'com.google.guava:guava:18.0'
-	compile 'com.google.code.gson:gson:2.3.1'
-	compile 'com.fathzer:javaluator:3.0.0'
-	compile 'org.apache.commons:commons-math3:3.4.1'
+	testCompile 'junit:junit:4.12'
+	testCompile 'com.google.guava:guava:18.0'
+	testCompile 'org.apache.commons:commons-math3:3.4.1'
 }
