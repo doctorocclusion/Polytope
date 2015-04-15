@@ -1,4 +1,5 @@
-package net.eekysam.jpolytope;
+package net.eekysam.jpolytope.geometric;
+
 
 public class Primitive
 {
