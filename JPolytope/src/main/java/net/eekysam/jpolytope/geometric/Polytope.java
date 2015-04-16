@@ -3,23 +3,23 @@ package net.eekysam.jpolytope.geometric;
 import java.util.HashMap;
 import java.util.Set;
 
-import net.eekysam.jpolytope.general.PolytopeGraph;
+import net.eekysam.jpolytope.general.GradedPoset;
 import net.eekysam.jpolytope.geometric.dat.IGeoDat;
 import net.eekysam.jpolytope.geometric.dat.IPointDat;
 
 public class Polytope
 {
 	public final int dimension;
-	public final PolytopeGraph<IGeoDat> geo;
+	public final GradedPoset<IGeoDat> geo;
 	
 	public Polytope(int dimension)
 	{
-		this(new PolytopeGraph<>(dimension));
+		this(new GradedPoset<>(dimension));
 	}
 	
-	public Polytope(PolytopeGraph<IGeoDat> geo)
+	public Polytope(GradedPoset<IGeoDat> geo)
 	{
-		this.dimension = geo.layer;
+		this.dimension = geo.rank;
 		this.geo = geo;
 	}
 	
@@ -27,10 +27,10 @@ public class Polytope
 	public Polytope clone()
 	{
 		Polytope clone = new Polytope(this.geo.clone());
-		HashMap<Integer, Set<PolytopeGraph<IGeoDat>>> all = clone.geo.getLayers();
-		for (Set<PolytopeGraph<IGeoDat>> dimset : all.values())
+		HashMap<Integer, Set<GradedPoset<IGeoDat>>> all = clone.geo.getLayers();
+		for (Set<GradedPoset<IGeoDat>> dimset : all.values())
 		{
-			for (PolytopeGraph<IGeoDat> elem : dimset)
+			for (GradedPoset<IGeoDat> elem : dimset)
 			{
 				if (elem.data != null)
 				{
@@ -43,7 +43,7 @@ public class Polytope
 	
 	public void transform(TransformMatrix matrix)
 	{
-		for (PolytopeGraph<IGeoDat> vert : this.geo.getElements(0))
+		for (GradedPoset<IGeoDat> vert : this.geo.getElements(0))
 		{
 			if (vert.data instanceof IPointDat)
 			{

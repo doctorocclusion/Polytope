@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Set;
 
-import net.eekysam.jpolytope.general.PolytopeGraph;
+import net.eekysam.jpolytope.general.GradedPoset;
 import net.eekysam.jpolytope.geometric.PlatonicSolid;
 import net.eekysam.jpolytope.geometric.Polytope;
 import net.eekysam.jpolytope.geometric.Vector;
@@ -32,7 +32,7 @@ public class TestPlatonic
 	public PlatonicSolid solid;
 	
 	public Polytope geometry;
-	public HashMap<Integer, Set<PolytopeGraph<IGeoDat>>> elements;
+	public HashMap<Integer, Set<GradedPoset<IGeoDat>>> elements;
 	
 	@Before
 	public void setup()
@@ -68,7 +68,7 @@ public class TestPlatonic
 	@Test
 	public void testP()
 	{
-		for (PolytopeGraph<IGeoDat> face : this.elements.get(2))
+		for (GradedPoset<IGeoDat> face : this.elements.get(2))
 		{
 			Assert.assertEquals(this.solid.p, face.childCount());
 		}
@@ -77,7 +77,7 @@ public class TestPlatonic
 	@Test
 	public void testEdgeRelations()
 	{
-		for (PolytopeGraph<IGeoDat> edge : this.elements.get(1))
+		for (GradedPoset<IGeoDat> edge : this.elements.get(1))
 		{
 			Assert.assertEquals(2, edge.childCount());
 			Assert.assertEquals(2, edge.parentCount());
@@ -87,7 +87,7 @@ public class TestPlatonic
 	@Test
 	public void testQ()
 	{
-		for (PolytopeGraph<IGeoDat> vert : this.elements.get(0))
+		for (GradedPoset<IGeoDat> vert : this.elements.get(0))
 		{
 			Assert.assertEquals(this.solid.q, vert.parentCount());
 		}
@@ -96,11 +96,11 @@ public class TestPlatonic
 	@Test
 	public void testEdgeLength()
 	{
-		for (PolytopeGraph<IGeoDat> edge : this.elements.get(1))
+		for (GradedPoset<IGeoDat> edge : this.elements.get(1))
 		{
-			Iterator<PolytopeGraph<IGeoDat>> verts = edge.getChildren().iterator();
-			PolytopeGraph<IGeoDat> v1 = verts.next();
-			PolytopeGraph<IGeoDat> v2 = verts.next();
+			Iterator<GradedPoset<IGeoDat>> verts = edge.getChildren().iterator();
+			GradedPoset<IGeoDat> v1 = verts.next();
+			GradedPoset<IGeoDat> v2 = verts.next();
 			double length = Vector.diff((Vertex) v1.data, (Vertex) v2.data).length();
 			Assert.assertEquals(1.0, length, 0.00001);
 		}
@@ -109,13 +109,13 @@ public class TestPlatonic
 	@Test
 	public void testGraphEnds()
 	{
-		Set<PolytopeGraph<IGeoDat>> tops = this.geometry.geo.getTops();
-		Set<PolytopeGraph<IGeoDat>> bots = this.geometry.geo.getBots();
+		Set<GradedPoset<IGeoDat>> tops = this.geometry.geo.getTops();
+		Set<GradedPoset<IGeoDat>> bots = this.geometry.geo.getBots();
 		Assert.assertEquals(1, tops.size());
 		Assert.assertEquals(1, bots.size());
-		PolytopeGraph<IGeoDat> top = tops.iterator().next();
-		PolytopeGraph<IGeoDat> bot = bots.iterator().next();
-		Assert.assertEquals(3, top.layer);
-		Assert.assertEquals(-1, bot.layer);
+		GradedPoset<IGeoDat> top = tops.iterator().next();
+		GradedPoset<IGeoDat> bot = bots.iterator().next();
+		Assert.assertEquals(3, top.rank);
+		Assert.assertEquals(-1, bot.rank);
 	}
 }

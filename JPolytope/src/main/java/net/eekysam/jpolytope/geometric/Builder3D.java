@@ -5,7 +5,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
-import net.eekysam.jpolytope.general.PolytopeGraph;
+import net.eekysam.jpolytope.general.GradedPoset;
 import net.eekysam.jpolytope.geometric.dat.IGeoDat;
 import net.eekysam.jpolytope.geometric.dat.Vertex;
 
@@ -125,34 +125,34 @@ public class Builder3D
 	{
 		Polytope poly = new Polytope(3);
 		
-		PolytopeGraph<IGeoDat> nullgeo = new PolytopeGraph<IGeoDat>(-1);
+		GradedPoset<IGeoDat> nullgeo = new GradedPoset<IGeoDat>(-1);
 		
-		HashMap<Integer, PolytopeGraph<IGeoDat>> pvs = new HashMap<>();
+		HashMap<Integer, GradedPoset<IGeoDat>> pvs = new HashMap<>();
 		for (Entry<Integer, Vertex> vert : this.verts.entrySet())
 		{
-			PolytopeGraph<IGeoDat> pv = new PolytopeGraph<>(0);
+			GradedPoset<IGeoDat> pv = new GradedPoset<>(0);
 			pv.data = vert.getValue();
 			pv.addChild(nullgeo);
 			pvs.put(vert.getKey(), pv);
 		}
 		
 		@SuppressWarnings("unchecked")
-		PolytopeGraph<IGeoDat>[] pes = new PolytopeGraph[this.edges.size()];
+		GradedPoset<IGeoDat>[] pes = new GradedPoset[this.edges.size()];
 		
 		for (int i = 0; i < pes.length; i++)
 		{
-			pes[i] = new PolytopeGraph<>(1);
+			pes[i] = new GradedPoset<>(1);
 			Edge e = this.edges.get(i);
 			pes[i].addChild(pvs.get(e.v1));
 			pes[i].addChild(pvs.get(e.v2));
 		}
 		
 		@SuppressWarnings("unchecked")
-		PolytopeGraph<IGeoDat>[] fes = new PolytopeGraph[this.faces.size()];
+		GradedPoset<IGeoDat>[] fes = new GradedPoset[this.faces.size()];
 		
 		for (int i = 0; i < fes.length; i++)
 		{
-			fes[i] = new PolytopeGraph<>(2);
+			fes[i] = new GradedPoset<>(2);
 			Face f = this.faces.get(i);
 			for (int e : f.edges)
 			{
@@ -160,7 +160,7 @@ public class Builder3D
 			}
 		}
 		
-		for (PolytopeGraph<IGeoDat> f : fes)
+		for (GradedPoset<IGeoDat> f : fes)
 		{
 			poly.geo.addChild(f);
 		}
