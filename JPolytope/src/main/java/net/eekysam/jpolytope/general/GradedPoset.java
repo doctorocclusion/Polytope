@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -253,6 +254,38 @@ public class GradedPoset<T>
 		}
 		this.children.remove(child);
 		child.parents.remove(this);
+	}
+	
+	public Set<GradedPoset<T>> splitFromParents()
+	{
+		Set<GradedPoset<T>> old = new HashSet<>();
+		old.addAll(this.parents);
+		Iterator<GradedPoset<T>> parents = this.parents.iterator();
+		while (parents.hasNext())
+		{
+			parents.next().children.remove(this);
+			parents.remove();
+		}
+		return old;
+	}
+	
+	public Set<GradedPoset<T>> splitFromChildren()
+	{
+		Set<GradedPoset<T>> old = new HashSet<>();
+		old.addAll(this.children);
+		Iterator<GradedPoset<T>> children = this.children.iterator();
+		while (children.hasNext())
+		{
+			children.next().parents.remove(this);
+			children.remove();
+		}
+		return old;
+	}
+	
+	public void delete()
+	{
+		this.splitFromParents();
+		this.splitFromChildren();
 	}
 	
 	public Set<GradedPoset<T>> getTops()

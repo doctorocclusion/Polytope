@@ -6,11 +6,13 @@ import java.util.Set;
 import net.eekysam.jpolytope.general.GradedPoset;
 import net.eekysam.jpolytope.geometric.dat.IGeoDat;
 import net.eekysam.jpolytope.geometric.dat.IPointDat;
+import net.eekysam.jpolytope.geometric.ops.ParentVertsToNull;
 
 public class Polytope
 {
 	public final int dimension;
 	public final GradedPoset<IGeoDat> geo;
+	private final ParentVertsToNull addNullElement;
 	
 	public Polytope(int dimension)
 	{
@@ -21,6 +23,8 @@ public class Polytope
 	{
 		this.dimension = geo.rank;
 		this.geo = geo;
+		
+		this.addNullElement = new ParentVertsToNull(this);
 	}
 	
 	@Override
@@ -57,5 +61,16 @@ public class Polytope
 		TransformMatrix matrix = new TransformMatrix(this.dimension);
 		matrix.scale(scale);
 		this.transform(matrix);
+	}
+	
+	public GradedPoset<IGeoDat> getNullElement()
+	{
+		return this.addNullElement.getNull();
+	}
+	
+	public GradedPoset<IGeoDat> updateNullElement()
+	{
+		this.addNullElement.apply();
+		return this.getNullElement();
 	}
 }

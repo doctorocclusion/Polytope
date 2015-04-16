@@ -39,10 +39,10 @@ public class CreateDual<T> implements IOperation<GradedPoset<T>>
 	private GradedPoset<T> original;
 	private GradedPoset<T> dual;
 	
-	private int minrank = Integer.MAX_VALUE;
-	private int maxrank = Integer.MIN_VALUE;
+	private int minrank;
+	private int maxrank;
 	
-	private HashMap<UUID, GradedPoset<T>> duals = new HashMap<>();
+	private HashMap<UUID, GradedPoset<T>> duals;
 	
 	public CreateDual(GradedPoset<T> original)
 	{
@@ -50,12 +50,11 @@ public class CreateDual<T> implements IOperation<GradedPoset<T>>
 	}
 	
 	@Override
-	public CreateDual<T> run()
+	public void apply()
 	{
-		if (this.dual != null)
-		{
-			throw new IllegalStateException("A dual has already been created");
-		}
+		this.minrank = Integer.MAX_VALUE;
+		this.maxrank = Integer.MIN_VALUE;
+		this.duals = new HashMap<>();
 		
 		Set<GradedPoset<T>> tops = this.original.getTops();
 		Set<GradedPoset<T>> bots = this.original.getBots();
@@ -71,7 +70,6 @@ public class CreateDual<T> implements IOperation<GradedPoset<T>>
 		this.original.forEach(new Dualer());
 		
 		this.dual = this.duals.get(this.original.id);
-		return this;
 	}
 	
 	public int getMinRank()
@@ -92,10 +90,6 @@ public class CreateDual<T> implements IOperation<GradedPoset<T>>
 	@Override
 	public GradedPoset<T> get()
 	{
-		if (this.dual == null)
-		{
-			throw new IllegalStateException("A dual has not been created");
-		}
 		return this.dual;
 	}
 }

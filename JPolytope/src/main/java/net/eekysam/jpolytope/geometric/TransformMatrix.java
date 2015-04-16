@@ -1,5 +1,7 @@
 package net.eekysam.jpolytope.geometric;
 
+import net.eekysam.jpolytope.geometric.ops.IGeoOp;
+
 public class TransformMatrix
 {
 	public final int dimension;
@@ -107,5 +109,23 @@ public class TransformMatrix
 	public void transform(Vector vec)
 	{
 		this.transform(vec, 1.0);
+	}
+	
+	public IGeoOp operation(Polytope poly)
+	{
+		return new IGeoOp()
+		{
+			@Override
+			public void apply()
+			{
+				poly.transform(TransformMatrix.this);
+			}
+			
+			@Override
+			public Polytope get()
+			{
+				return poly;
+			}
+		};
 	}
 }
