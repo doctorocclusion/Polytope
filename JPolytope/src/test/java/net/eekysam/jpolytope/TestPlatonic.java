@@ -38,7 +38,7 @@ public class TestPlatonic
 	public void setup()
 	{
 		this.geometry = this.solid.geometry();
-		this.elements = this.geometry.geo.getElements();
+		this.elements = this.geometry.geo.getLayers();
 	}
 	
 	@Test
@@ -104,5 +104,18 @@ public class TestPlatonic
 			double length = Vector.diff((Vertex) v1.data, (Vertex) v2.data).length();
 			Assert.assertEquals(1.0, length, 0.00001);
 		}
+	}
+	
+	@Test
+	public void testGraphEnds()
+	{
+		Set<PolytopeGraph<IGeoDat>> tops = this.geometry.geo.getTops();
+		Set<PolytopeGraph<IGeoDat>> bots = this.geometry.geo.getBots();
+		Assert.assertEquals(1, tops.size());
+		Assert.assertEquals(1, bots.size());
+		PolytopeGraph<IGeoDat> top = tops.iterator().next();
+		PolytopeGraph<IGeoDat> bot = bots.iterator().next();
+		Assert.assertEquals(3, top.layer);
+		Assert.assertEquals(-1, bot.layer);
 	}
 }

@@ -19,7 +19,7 @@ public class Polytope
 	
 	public Polytope(PolytopeGraph<IGeoDat> geo)
 	{
-		this.dimension = geo.dimension;
+		this.dimension = geo.layer;
 		this.geo = geo;
 	}
 	
@@ -27,7 +27,7 @@ public class Polytope
 	public Polytope clone()
 	{
 		Polytope clone = new Polytope(this.geo.clone());
-		HashMap<Integer, Set<PolytopeGraph<IGeoDat>>> all = clone.geo.getElements();
+		HashMap<Integer, Set<PolytopeGraph<IGeoDat>>> all = clone.geo.getLayers();
 		for (Set<PolytopeGraph<IGeoDat>> dimset : all.values())
 		{
 			for (PolytopeGraph<IGeoDat> elem : dimset)
