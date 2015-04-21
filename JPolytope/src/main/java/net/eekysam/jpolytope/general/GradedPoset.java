@@ -330,6 +330,35 @@ public class GradedPoset<T>
 		return cloner.cloned.get(this.id);
 	}
 	
+	public int[][] getTree()
+	{
+		HashMap<GradedPoset<T>, Integer> ids = new HashMap<GradedPoset<T>, Integer>();
+		int nextId = 0;
+		HashMap<Integer, Set<GradedPoset<T>>> layers = this.getLayers();
+		for (Set<GradedPoset<T>> layer : layers.values())
+		{
+			for (GradedPoset<T> elem : layer)
+			{
+				ids.put(elem, nextId++);
+			}
+		}
+		int[][] tree = new int[nextId][0];
+		for (Set<GradedPoset<T>> layer : layers.values())
+		{
+			for (GradedPoset<T> elem : layer)
+			{
+				int id = ids.get(elem);
+				tree[id] = new int[elem.children.size()];
+				Iterator<GradedPoset<T>> it = elem.children.iterator();
+				for (int i = 0; i < tree[id].length; i++)
+				{
+					tree[id][i] = ids.get(it.next());
+				}
+			}
+		}
+		return tree;
+	}
+	
 	@Override
 	public int hashCode()
 	{

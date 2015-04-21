@@ -1,21 +1,20 @@
 package net.eekysam.jpolytope.geometric;
 
-
-public class Primitive
+public class Simplex
 {
 	public final Vector[] verts;
 	
-	public Primitive(Vector... verts)
+	public Simplex(Vector... verts)
 	{
 		this.verts = verts;
 	}
 	
-	public Primitive[] facets()
+	public Simplex[] facets()
 	{
-		Primitive[] facets = new Primitive[this.verts.length];
+		Simplex[] facets = new Simplex[this.verts.length];
 		for (int i = 0; i < facets.length; i++)
 		{
-			facets[i] = new Primitive(this.vertsWithout(i));
+			facets[i] = new Simplex(this.vertsWithout(i));
 		}
 		return facets;
 	}
